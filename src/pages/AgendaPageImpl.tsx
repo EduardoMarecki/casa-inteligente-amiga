@@ -83,12 +83,14 @@ const [filterCategory, setFilterCategory] = useState<string>('');
       if (filterRange === 'semana') {
         const startWeek = today.startOf('week');
         const endWeek = today.endOf('week');
-        return start.isBetween(startWeek, endWeek, 'day', '[]') || end.isBetween(startWeek, endWeek, 'day', '[]');
+        return (start.isAfter(startWeek.subtract(1, 'day')) && start.isBefore(endWeek.add(1, 'day'))) ||
+               (end.isAfter(startWeek.subtract(1, 'day')) && end.isBefore(endWeek.add(1, 'day')));
       }
       if (filterRange === 'mes') {
         const startMonth = today.startOf('month');
         const endMonth = today.endOf('month');
-        return start.isBetween(startMonth, endMonth, 'day', '[]') || end.isBetween(startMonth, endMonth, 'day', '[]');
+        return (start.isAfter(startMonth.subtract(1, 'day')) && start.isBefore(endMonth.add(1, 'day'))) ||
+               (end.isAfter(startMonth.subtract(1, 'day')) && end.isBefore(endMonth.add(1, 'day')));
       }
       return true;
     });
