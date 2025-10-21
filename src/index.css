@@ -1,126 +1,37 @@
-@tailwind base;
-@tailwind components;
-@tailwind utilities;
+@import "tailwindcss";
+@plugin "daisyui";
 
-/* Definition of the design system. All colors, gradients, fonts, etc should be defined here. 
-All colors MUST be HSL.
-*/
+/* Global minimalist tweaks */
 
-@layer base {
-  :root {
-    --background: 30 25% 98%;
-    --foreground: 20 14% 15%;
-
-    --card: 0 0% 100%;
-    --card-foreground: 20 14% 15%;
-
-    --popover: 0 0% 100%;
-    --popover-foreground: 20 14% 15%;
-
-    --primary: 10 78% 65%;
-    --primary-foreground: 0 0% 100%;
-
-    --secondary: 142 52% 60%;
-    --secondary-foreground: 0 0% 100%;
-
-    --muted: 30 20% 94%;
-    --muted-foreground: 20 10% 45%;
-
-    --accent: 207 90% 61%;
-    --accent-foreground: 0 0% 100%;
-
-    --destructive: 0 84% 60%;
-    --destructive-foreground: 0 0% 100%;
-
-    --border: 30 15% 88%;
-    --input: 30 15% 88%;
-    --ring: 10 78% 65%;
-
-    --radius: 0.75rem;
-    
-    /* Gradients */
-    --gradient-warm: linear-gradient(135deg, hsl(10 78% 65%) 0%, hsl(25 85% 60%) 100%);
-    --gradient-cool: linear-gradient(135deg, hsl(142 52% 60%) 0%, hsl(207 90% 61%) 100%);
-    --gradient-subtle: linear-gradient(180deg, hsl(30 25% 98%) 0%, hsl(30 30% 96%) 100%);
-    
-    /* Shadows */
-    --shadow-sm: 0 1px 2px 0 hsl(10 78% 65% / 0.05);
-    --shadow-md: 0 4px 6px -1px hsl(10 78% 65% / 0.1);
-    --shadow-lg: 0 10px 15px -3px hsl(10 78% 65% / 0.1);
-    --shadow-card: 0 2px 8px -2px hsl(10 78% 65% / 0.08);
-    
-    /* Transitions */
-    --transition-base: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
-    --transition-smooth: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
-
-    --radius: 0.75rem;
-
-    --sidebar-background: 0 0% 98%;
-
-    --sidebar-foreground: 240 5.3% 26.1%;
-
-    --sidebar-primary: 240 5.9% 10%;
-
-    --sidebar-primary-foreground: 0 0% 98%;
-
-    --sidebar-accent: 240 4.8% 95.9%;
-
-    --sidebar-accent-foreground: 240 5.9% 10%;
-
-    --sidebar-border: 220 13% 91%;
-
-    --sidebar-ring: 217.2 91.2% 59.8%;
-  }
-
-  .dark {
-    --background: 20 15% 10%;
-    --foreground: 30 25% 95%;
-
-    --card: 20 15% 12%;
-    --card-foreground: 30 25% 95%;
-
-    --popover: 20 15% 12%;
-    --popover-foreground: 30 25% 95%;
-
-    --primary: 10 78% 65%;
-    --primary-foreground: 0 0% 100%;
-
-    --secondary: 142 52% 60%;
-    --secondary-foreground: 0 0% 100%;
-
-    --muted: 20 15% 18%;
-    --muted-foreground: 30 15% 60%;
-
-    --accent: 207 90% 61%;
-    --accent-foreground: 0 0% 100%;
-
-    --destructive: 0 62% 45%;
-    --destructive-foreground: 0 0% 100%;
-
-    --border: 20 15% 20%;
-    --input: 20 15% 20%;
-    --ring: 10 78% 65%;
-    
-    --sidebar-background: 20 15% 8%;
-    --sidebar-foreground: 30 25% 95%;
-    --sidebar-primary: 10 78% 65%;
-    --sidebar-primary-foreground: 0 0% 100%;
-    --sidebar-accent: 20 15% 15%;
-    --sidebar-accent-foreground: 30 25% 95%;
-    --sidebar-border: 20 15% 18%;
-    --sidebar-ring: 10 78% 65%;
-    
-    --gradient-warm: linear-gradient(135deg, hsl(10 78% 65%) 0%, hsl(25 85% 60%) 100%);
-    --gradient-cool: linear-gradient(135deg, hsl(142 52% 60%) 0%, hsl(207 90% 61%) 100%);
-  }
+/* Subtle focus ring for inputs/selects/textarea */
+.input,
+.select,
+.textarea {
+  @apply focus:outline-none focus:ring-2 focus:ring-primary/25;
 }
 
-@layer base {
-  * {
-    @apply border-border;
-  }
+/* Cleaner surface for cards, stats and alerts */
+.card {
+  @apply border border-base-300 shadow-sm;
+}
+.stats {
+  @apply border border-base-300 shadow-sm;
+}
+.alert {
+  @apply shadow-sm;
+}
 
-  body {
-    @apply bg-background text-foreground;
-  }
+/* Menu active state more minimal */
+.menu li > a.active,
+.menu li > button.active {
+  @apply bg-base-200 font-medium rounded-md;
+}
+.menu li > a:not(.active):hover,
+.menu li > button:not(.active):hover {
+  @apply bg-base-200 rounded-md;
+}
+
+/* Optional: reduce default padding slightly on card body for denser but clean layout */
+.card .card-body {
+  @apply gap-3;
 }
