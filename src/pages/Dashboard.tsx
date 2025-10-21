@@ -26,6 +26,9 @@ const Dashboard = () => {
           <div className="max-w-md">
             <h1 className="text-3xl font-bold">Painel Principal</h1>
             <p className="py-2 opacity-80">Resumo das tarefas, eventos e lembretes para acompanhar sua casa de forma simples.</p>
+            <div className="mt-1">
+              <span className="badge badge-success badge-sm">Deploy automático via GitHub Actions</span>
+            </div>
             <div className="flex flex-wrap gap-2 justify-center">
               <Link to="/tarefas" className="btn btn-primary"><FaTasks className="mr-2"/>Tarefas</Link>
               <Link to="/compras" className="btn btn-secondary"><FaShoppingBasket className="mr-2"/>Compras</Link>
