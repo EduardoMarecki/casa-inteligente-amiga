@@ -30,11 +30,14 @@ jobs:
       - name: Build
         run: npm run build
       - name: Add .nojekyll file
-        run: touch docs/.nojekyll
-      - name: Upload GitHub Pages artifact (docs)
-        uses: actions/upload-pages-artifact@v3
-        with:
-          path: docs
+         run: touch docs/.nojekyll
+       - name: Add SPA 404 fallback
+         run: |
+           echo "<!doctype html><html><head><meta http-equiv=\"refresh\" content=\"0; url=/casa-inteligente-amiga/\" /></head><body></body></html>" > docs/404.html
+       - name: Upload GitHub Pages artifact (docs)
+         uses: actions/upload-pages-artifact@v3
+         with:
+           path: docs
 
   deploy:
     environment:
