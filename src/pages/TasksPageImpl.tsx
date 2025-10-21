@@ -4,7 +4,7 @@ import type { Tarefa, Prioridade, StatusTarefa } from '../store/types';
 import dayjs from 'dayjs';
 import Calendar from 'react-calendar';
 import 'react-calendar/dist/Calendar.css';
-import { FaCheck, FaUndo, FaTrash, FaCalendarAlt, FaListUl, FaFilter, FaPlus, FaTag, FaHeading, FaAlignLeft, FaFlag, FaCheckCircle } from 'react-icons/fa';
+import { FaCheck, FaUndo, FaTrash, FaCalendarAlt, FaListUl, FaFilter, FaPlus, FaTag, FaHeading, FaAlignLeft, FaFlag, FaCheckCircle, FaTasks } from 'react-icons/fa'
 
 const prioridades: Prioridade[] = ['baixa', 'media', 'alta'];
 const statusList: StatusTarefa[] = ['pendente', 'concluida'];
@@ -39,6 +39,7 @@ const TasksPageImpl = () => {
   const [filtroPrioridade, setFiltroPrioridade] = useState<Prioridade | 'todas'>('todas');
   const [filtroCategoria, setFiltroCategoria] = useState<string>('');
   const [calendarMode, setCalendarMode] = useState(false);
+  const [showFilters, setShowFilters] = useState(true);
 
   const categoriasExistentes = useMemo(() => {
     return Array.from(new Set(tarefas.map(t => t.categoria).filter(Boolean))) as string[];
@@ -59,6 +60,7 @@ const TasksPageImpl = () => {
   const pendentesCount = tarefasFiltradas.filter(t => t.status === 'pendente').length;
   const concluidasCount = tarefasFiltradas.length - pendentesCount;
   const atrasadasCount = tarefasFiltradas.filter(isOverdue).length;
+  const completionPercent = tarefasFiltradas.length ? Math.round((concluidasCount * 100) / tarefasFiltradas.length) : 0;
 
   const handleAdd = () => {
     if (!titulo.trim()) return;
@@ -103,7 +105,7 @@ const TasksPageImpl = () => {
   return (
     <div className="space-y-6">
       <div className="flex items-center justify-between">
-        <h1 className="text-2xl font-bold">Tarefas</h1>
+        <h1 className="text-2xl font-bold flex items-center"><FaTasks className="mr-2"/>Tarefas</h1>
         <div className="flex gap-2">
           <button className="btn btn-outline" onClick={() => setCalendarMode(!calendarMode)}>
             {calendarMode ? (<><FaListUl className="mr-2"/>Ver Lista</>) : (<><FaCalendarAlt className="mr-2"/>Ver Calendário</>)}
@@ -153,9 +155,11 @@ const TasksPageImpl = () => {
               <label className="label"><span className="label-text">Prioridade</span><span className="label-text-alt">baixa/média/alta</span></label>
               <div className="relative">
                 <FaFlag className="absolute left-3 top-1/2 -translate-y-1/2 opacity-60 pointer-events-none" />
-                <select className="select select-bordered select-warning pl-10" value={prioridade} onChange={e => setPrioridade(e.target.value as Prioridade)}>
-                  {prioridades.map(p => <option key={p} value={p}>{p}</option>)}
-                </select>
+                <div className="btn-group pl-10">
+                  <button type="button" className={`btn btn-sm ${prioridade === 'baixa' ? 'btn-success' : 'btn-ghost'}`} onClick={() => setPrioridade('baixa')}>baixa</button>
+                  <button type="button" className={`btn btn-sm ${prioridade === 'media' ? 'btn-warning' : 'btn-ghost'}`} onClick={() => setPrioridade('media')}>média</button>
+                  <button type="button" className={`btn btn-sm ${prioridade === 'alta' ? 'btn-error' : 'btn-ghost'}`} onClick={() => setPrioridade('alta')}>alta</button>
+                </div>
               </div>
             </div>
             <div className="form-control">
@@ -169,9 +173,10 @@ const TasksPageImpl = () => {
               <label className="label"><span className="label-text">Status</span><span className="label-text-alt">pendente/concluída</span></label>
               <div className="relative">
                 <FaCheckCircle className="absolute left-3 top-1/2 -translate-y-1/2 opacity-60 pointer-events-none" />
-                <select className="select select-bordered select-info pl-10" value={status} onChange={e => setStatus(e.target.value as StatusTarefa)}>
-                  {statusList.map(s => <option key={s} value={s}>{s}</option>)}
-                </select>
+                <div className="btn-group pl-10">
+                  <button type="button" className={`btn btn-sm ${status === 'pendente' ? 'btn-info' : 'btn-ghost'}`} onClick={() => setStatus('pendente')}>pendente</button>
+                  <button type="button" className={`btn btn-sm ${status === 'concluida' ? 'btn-neutral' : 'btn-ghost'}`} onClick={() => setStatus('concluida')}>concluída</button>
+                </div>
               </div>
             </div>
           </div>
@@ -184,39 +189,44 @@ const TasksPageImpl = () => {
       {/* Filtros */}
       <div className="card bg-base-100 shadow-sm border border-base-300">
         <div className="card-body">
-          <h2 className="card-title">Filtros</h2>
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-            <div className="form-control">
-              <label className="label"><span className="label-text">Status</span></label>
-              <div className="relative">
-                <FaCheckCircle className="absolute left-3 top-1/2 -translate-y-1/2 opacity-60 pointer-events-none" />
-                <select className="select select-bordered pl-10" value={filtroStatus} onChange={e => setFiltroStatus(e.target.value as any)}>
-                  <option value="todos">Todos</option>
-                  {statusList.map(s => <option key={s} value={s}>{s}</option>)}
-                </select>
-              </div>
-            </div>
-            <div className="form-control">
-              <label className="label"><span className="label-text">Prioridade</span></label>
-              <div className="relative">
-                <FaFlag className="absolute left-3 top-1/2 -translate-y-1/2 opacity-60 pointer-events-none" />
-                <select className="select select-bordered pl-10" value={filtroPrioridade} onChange={e => setFiltroPrioridade(e.target.value as any)}>
-                  <option value="todas">Todas</option>
-                  {prioridades.map(p => <option key={p} value={p}>{p}</option>)}
-                </select>
-              </div>
-            </div>
-            <div className="form-control">
-              <label className="label"><span className="label-text">Categoria</span></label>
-              <div className="relative">
-                <FaTag className="absolute left-3 top-1/2 -translate-y-1/2 opacity-60 pointer-events-none" />
-                <select className="select select-bordered pl-10" value={filtroCategoria} onChange={e => setFiltroCategoria(e.target.value)}>
-                  <option value="">Todas</option>
-                  {categoriasExistentes.map(c => <option key={c} value={c}>{c}</option>)}
-                </select>
-              </div>
-            </div>
+          <div className="flex items-center justify-between">
+            <h2 className="card-title">Filtros</h2>
+            <button className="btn btn-ghost btn-sm" onClick={() => setShowFilters(!showFilters)}>{showFilters ? 'Ocultar' : 'Mostrar'}</button>
           </div>
+          {showFilters && (
+            <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+              <div className="form-control">
+                <label className="label"><span className="label-text">Status</span></label>
+                <div className="relative">
+                  <FaCheckCircle className="absolute left-3 top-1/2 -translate-y-1/2 opacity-60 pointer-events-none" />
+                  <select className="select select-bordered pl-10" value={filtroStatus} onChange={e => setFiltroStatus(e.target.value as any)}>
+                    <option value="todos">Todos</option>
+                    {statusList.map(s => <option key={s} value={s}>{s}</option>)}
+                  </select>
+                </div>
+              </div>
+              <div className="form-control">
+                <label className="label"><span className="label-text">Prioridade</span></label>
+                <div className="relative">
+                  <FaFlag className="absolute left-3 top-1/2 -translate-y-1/2 opacity-60 pointer-events-none" />
+                  <select className="select select-bordered pl-10" value={filtroPrioridade} onChange={e => setFiltroPrioridade(e.target.value as any)}>
+                    <option value="todas">Todas</option>
+                    {prioridades.map(p => <option key={p} value={p}>{p}</option>)}
+                  </select>
+                </div>
+              </div>
+              <div className="form-control">
+                <label className="label"><span className="label-text">Categoria</span></label>
+                <div className="relative">
+                  <FaTag className="absolute left-3 top-1/2 -translate-y-1/2 opacity-60 pointer-events-none" />
+                  <select className="select select-bordered pl-10" value={filtroCategoria} onChange={e => setFiltroCategoria(e.target.value)}>
+                    <option value="">Todas</option>
+                    {categoriasExistentes.map(c => <option key={c} value={c}>{c}</option>)}
+                  </select>
+                </div>
+              </div>
+            </div>
+          )}
         </div>
       </div>
 
@@ -227,7 +237,7 @@ const TasksPageImpl = () => {
             <div className="alert alert-info"><span className="flex items-center"><FaFilter className="mr-2"/>Nenhuma tarefa encontrada.</span></div>
           ) : (
             tarefasFiltradas.map((t) => (
-              <div key={t.id} className={`card bg-base-100 shadow-sm border border-base-300 border-l-4 ${prioridadeBorder[t.prioridade]}`}>
+              <div key={t.id} className={`card bg-base-100 shadow-sm hover:shadow-md transition rounded-xl border border-base-300 border-l-4 ${prioridadeBorder[t.prioridade]}`}>
                 <div className="card-body">
                   <div className="flex items-start justify-between">
                     <div>
@@ -238,6 +248,7 @@ const TasksPageImpl = () => {
                         <span className={`badge ${prioridadeBadge[t.prioridade]}`}>Prioridade: {t.prioridade}</span>
                         {t.data_vencimento && (
                           <span className={`badge ${isOverdue(t) ? 'badge-error' : 'badge-outline'}`}>
+                            <FaCalendarAlt className="mr-1"/>
                             {isOverdue(t) ? `Atrasada • ${dayjs(t.data_vencimento).format('DD/MM/YYYY')}` : `Vence: ${dayjs(t.data_vencimento).format('DD/MM/YYYY')}`}
                           </span>
                         )}
@@ -263,6 +274,15 @@ const TasksPageImpl = () => {
           </div>
         </div>
       )}
+      <div className="card bg-base-100 shadow-sm border border-base-300 rounded-xl">
+        <div className="card-body">
+          <div className="flex items-center justify-between">
+            <span className="text-sm opacity-80">Progresso</span>
+            <span className="text-sm font-semibold">{completionPercent}%</span>
+          </div>
+          <progress className="progress progress-primary" value={completionPercent} max="100"></progress>
+        </div>
+      </div>
       <div className="stats bg-base-100 shadow-sm border border-base-300 rounded-xl">
         <div className="stat">
           <div className="stat-title">Pendentes</div>
