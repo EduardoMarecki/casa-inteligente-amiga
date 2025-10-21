@@ -6,7 +6,6 @@ import type {
   CategoriaFinanceira, 
   MetaFinanceira, 
   TipoTransacao, 
-  StatusMeta,
   ResumoFinanceiro 
 } from './types';
 
