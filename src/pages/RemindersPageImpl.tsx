@@ -1,7 +1,7 @@
 import { useMemo, useState } from 'react';
 import { useAppStore } from '../store/appStore';
 import dayjs from 'dayjs';
-import { FaCalendarAlt, FaClock, FaTag, FaHeading, FaAlignLeft, FaPlus, FaEdit, FaTrash } from 'react-icons/fa';
+import { FaCalendarAlt, FaClock, FaTag, FaHeading, FaAlignLeft, FaPlus, FaEdit, FaTrash, FaFilter } from 'react-icons/fa';
 
 const categorias = ['pagamento', 'manutencao', 'evento', 'pessoal'];
 const categoriaBadgeClass = (cat?: string) => {
@@ -18,6 +18,11 @@ const RemindersPageImpl = () => {
   const [hora, setHora] = useState('');
   const [categoria, setCategoria] = useState('pagamento');
   const [descricao, setDescricao] = useState('');
+
+  // UI: filtros e colapsar formulário
+  const [showForm, setShowForm] = useState(true);
+  const [filterRange, setFilterRange] = useState<'todos'|'hoje'|'semana'|'mes'>('todos');
+  const [filterCategory, setFilterCategory] = useState<string>('todas');
 
   const categoriasExistentes = useMemo(() => {
     return Array.from(new Set(lembretes.map(l => l.categoria).filter(Boolean))) as string[];
@@ -39,31 +44,91 @@ const RemindersPageImpl = () => {
   };
 
   const hoje = dayjs();
+
+  // Funções auxiliares de estilo
+  const statusDoLembrete = (l: any) => {
+    const d = dayjs(l.data);
+    if (d.isSame(hoje, 'day')) return 'hoje';
+    if (d.isBefore(hoje, 'day')) return 'passado';
+    return 'proximo';
+  };
+  const statusBorderClass = (l: any) => {
+    const s = statusDoLembrete(l);
+    if (s === 'hoje') return 'border-l-4 border-warning';
+    if (s === 'passado') return 'border-l-4 border-neutral';
+    return 'border-l-4 border-info';
+  };
+
+  // Filtros visuais
+  const lembretesFiltrados = useMemo(() => {
+    let arr = lembretes;
+    if (filterCategory && filterCategory !== 'todas') {
+      arr = arr.filter(l => l.categoria === filterCategory);
+    }
+    return arr.filter(l => {
+      const d = dayjs(l.data);
+      if (filterRange === 'hoje') return d.isSame(hoje, 'day');
+      if (filterRange === 'semana') {
+        const s = hoje.startOf('week');
+        const e = hoje.endOf('week');
+        return d.isAfter(s.subtract(1, 'day')) && d.isBefore(e.add(1, 'day'));
+      }
+      if (filterRange === 'mes') {
+        const s = hoje.startOf('month');
+        const e = hoje.endOf('month');
+        return d.isAfter(s.subtract(1, 'day')) && d.isBefore(e.add(1, 'day'));
+      }
+      return true;
+    });
+  }, [lembretes, filterRange, filterCategory]);
+
   const futuros = useMemo(() =>
-    lembretes
+    lembretesFiltrados
       .filter(l => dayjs(l.data).isSame(hoje, 'day') || dayjs(l.data).isAfter(hoje))
       .sort(
         (a, b) =>
           dayjs(a.data + (a.hora ? ' ' + a.hora : '')).valueOf() -
           dayjs(b.data + (b.hora ? ' ' + b.hora : '')).valueOf()
       ),
-    [lembretes]
+    [lembretesFiltrados, hoje]
   );
   const passados = useMemo(() =>
-    lembretes
+    lembretesFiltrados
       .filter(l => dayjs(l.data).isBefore(hoje, 'day'))
       .sort((a, b) => dayjs(b.data).valueOf() - dayjs(a.data).valueOf()),
-    [lembretes]
+    [lembretesFiltrados, hoje]
   );
   const proximosCount = futuros.length;
-  const hojeCount = lembretes.filter(l => dayjs(l.data).isSame(hoje, 'day')).length;
+  const hojeCount = lembretesFiltrados.filter(l => dayjs(l.data).isSame(hoje, 'day')).length;
   const passadosCount = passados.length;
-  const totalCount = lembretes.length;
+  const totalCount = lembretesFiltrados.length;
 
   return (
     <div className="space-y-6">
-      <h1 className="text-2xl font-bold">Lembretes</h1>
+      <div className="flex items-center justify-between">
+        <h1 className="text-2xl font-bold flex items-center"><FaCalendarAlt className="mr-2"/>Lembretes</h1>
+        <button className="btn btn-outline btn-sm" onClick={() => setShowForm(v => !v)}>{showForm ? 'Ocultar formulário' : 'Ver formulário'}</button>
+      </div>
 
+      <div className="card bg-base-100 shadow-sm border border-base-300">
+        <div className="card-body py-3">
+          <div className="flex items-center gap-3">
+            <FaFilter className="opacity-60"/>
+            <div className="btn-group btn-group-sm">
+              <button className={`btn ${filterRange==='todos'?'btn-active':''}`} onClick={()=>setFilterRange('todos')}>Todos</button>
+              <button className={`btn ${filterRange==='hoje'?'btn-active':''}`} onClick={()=>setFilterRange('hoje')}>Hoje</button>
+              <button className={`btn ${filterRange==='semana'?'btn-active':''}`} onClick={()=>setFilterRange('semana')}>Semana</button>
+              <button className={`btn ${filterRange==='mes'?'btn-active':''}`} onClick={()=>setFilterRange('mes')}>Mês</button>
+            </div>
+            <select className="select select-bordered select-sm ml-auto" value={filterCategory} onChange={e=>setFilterCategory(e.target.value)}>
+              <option value="todas">Categoria: Todas</option>
+              {[...new Set([...categorias, ...categoriasExistentes])].map(c => <option key={c} value={c}>{c}</option>)}
+            </select>
+          </div>
+        </div>
+      </div>
+
+      {showForm && (
       <div className="card bg-base-100 shadow-sm border border-base-300">
         <div className="card-body">
           <h2 className="card-title">Novo Lembrete</h2>
@@ -118,6 +183,7 @@ const RemindersPageImpl = () => {
           </div>
         </div>
       </div>
+      )}
 
       <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
         <div className="card bg-base-100 shadow-sm border border-base-300">
@@ -127,7 +193,7 @@ const RemindersPageImpl = () => {
               {futuros.length === 0 ? (
                 <div className="alert alert-info"><span className="flex items-center"><FaCalendarAlt className="mr-2"/>Nenhum lembrete próximo.</span></div>
               ) : futuros.map(l => (
-                <div key={l.id} className="flex items-start justify-between p-3 rounded-md bg-base-100 shadow-sm border border-base-300">
+                <div key={l.id} className={`flex items-start justify-between p-3 rounded-md bg-base-100 shadow-sm border border-base-300 hover:bg-base-200 transition ${statusBorderClass(l)}`}>
                   <div>
                     <div className="font-semibold">{l.titulo}</div>
                     <div className="text-sm opacity-80">
@@ -153,7 +219,7 @@ const RemindersPageImpl = () => {
               {passados.length === 0 ? (
                 <div className="alert alert-info"><span className="flex items-center"><FaCalendarAlt className="mr-2"/>Nenhum lembrete passado.</span></div>
               ) : passados.map(l => (
-                <div key={l.id} className="flex items-start justify-between p-3 rounded-md bg-base-100 shadow-sm border border-base-300">
+                <div key={l.id} className={`flex items-start justify-between p-3 rounded-md bg-base-100 shadow-sm border border-base-300 hover:bg-base-200 transition ${statusBorderClass(l)}`}>
                   <div>
                     <div className="font-semibold">{l.titulo}</div>
                     <div className="text-sm opacity-80">
