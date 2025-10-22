@@ -117,8 +117,8 @@ const TasksPageImpl = () => {
       <div className="card bg-base-100 shadow-sm border border-base-300">
         <div className="card-body">
           <h2 className="card-title">Nova Tarefa</h2>
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-            <div className="form-control">
+          <div className="grid grid-cols-1 md:grid-cols-12 gap-4">
+            <div className="form-control md:col-span-7">
               <label className="label">
                 <span className="label-text">Título <span className="badge badge-primary badge-xs ml-2">obrigatório</span></span>
                 <span className="label-text-alt">Nome curto</span>
@@ -128,7 +128,7 @@ const TasksPageImpl = () => {
                 <input className="input input-bordered input-primary pl-10" value={titulo} onChange={e => setTitulo(e.target.value)} placeholder="Ex: Lavar roupa" />
               </div>
             </div>
-            <div className="form-control">
+            <div className="form-control md:col-span-5">
               <label className="label">
                 <span className="label-text">Categoria <span className="badge badge-ghost badge-xs ml-2">opcional</span></span>
                 <span className="label-text-alt">Sugestões pelas existentes</span>
@@ -141,7 +141,7 @@ const TasksPageImpl = () => {
                 {categoriasExistentes.map(c => <option key={c} value={c} />)}
               </datalist>
             </div>
-            <div className="form-control md:col-span-2">
+            <div className="form-control md:col-span-12">
               <label className="label">
                 <span className="label-text">Descrição <span className="badge badge-ghost badge-xs ml-2">opcional</span></span>
                 <span className="label-text-alt">Detalhes adicionais</span>
@@ -151,31 +151,34 @@ const TasksPageImpl = () => {
                 <textarea className="textarea textarea-bordered pl-10 min-h-24" value={descricao} onChange={e => setDescricao(e.target.value)} placeholder="Detalhes opcionais" />
               </div>
             </div>
-            <div className="form-control">
+            <div className="md:col-span-12">
+              <div className="divider">Planejamento</div>
+            </div>
+            <div className="form-control md:col-span-4">
               <label className="label"><span className="label-text">Prioridade</span><span className="label-text-alt">baixa/média/alta</span></label>
               <div className="relative">
                 <FaFlag className="absolute left-3 top-1/2 -translate-y-1/2 opacity-60 pointer-events-none" />
-                <div className="btn-group pl-10">
-                  <button type="button" className={`btn btn-sm ${prioridade === 'baixa' ? 'btn-success' : 'btn-ghost'}`} onClick={() => setPrioridade('baixa')}>baixa</button>
-                  <button type="button" className={`btn btn-sm ${prioridade === 'media' ? 'btn-warning' : 'btn-ghost'}`} onClick={() => setPrioridade('media')}>média</button>
-                  <button type="button" className={`btn btn-sm ${prioridade === 'alta' ? 'btn-error' : 'btn-ghost'}`} onClick={() => setPrioridade('alta')}>alta</button>
+                <div className="join pl-10">
+                  <button type="button" className={`btn btn-sm join-item ${prioridade === 'baixa' ? 'btn-success' : 'btn-ghost'}`} onClick={() => setPrioridade('baixa')}>baixa</button>
+                  <button type="button" className={`btn btn-sm join-item ${prioridade === 'media' ? 'btn-warning' : 'btn-ghost'}`} onClick={() => setPrioridade('media')}>média</button>
+                  <button type="button" className={`btn btn-sm join-item ${prioridade === 'alta' ? 'btn-error' : 'btn-ghost'}`} onClick={() => setPrioridade('alta')}>alta</button>
                 </div>
               </div>
             </div>
-            <div className="form-control">
+            <div className="form-control md:col-span-4">
               <label className="label"><span className="label-text">Vencimento</span><span className="label-text-alt">opcional</span></label>
               <div className="relative">
                 <FaCalendarAlt className="absolute left-3 top-1/2 -translate-y-1/2 opacity-60 pointer-events-none" />
                 <input type="date" className="input input-bordered input-info pl-10" value={dataVenc} onChange={e => setDataVenc(e.target.value)} />
               </div>
             </div>
-            <div className="form-control">
+            <div className="form-control md:col-span-4">
               <label className="label"><span className="label-text">Status</span><span className="label-text-alt">pendente/concluída</span></label>
               <div className="relative">
                 <FaCheckCircle className="absolute left-3 top-1/2 -translate-y-1/2 opacity-60 pointer-events-none" />
-                <div className="btn-group pl-10">
-                  <button type="button" className={`btn btn-sm ${status === 'pendente' ? 'btn-info' : 'btn-ghost'}`} onClick={() => setStatus('pendente')}>pendente</button>
-                  <button type="button" className={`btn btn-sm ${status === 'concluida' ? 'btn-neutral' : 'btn-ghost'}`} onClick={() => setStatus('concluida')}>concluída</button>
+                <div className="join pl-10">
+                  <button type="button" className={`btn btn-sm join-item ${status === 'pendente' ? 'btn-info' : 'btn-ghost'}`} onClick={() => setStatus('pendente')}>pendente</button>
+                  <button type="button" className={`btn btn-sm join-item ${status === 'concluida' ? 'btn-neutral' : 'btn-ghost'}`} onClick={() => setStatus('concluida')}>concluída</button>
                 </div>
               </div>
             </div>
