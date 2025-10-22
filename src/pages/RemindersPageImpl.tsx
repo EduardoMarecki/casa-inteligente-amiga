@@ -54,9 +54,10 @@ const RemindersPageImpl = () => {
   };
   const statusBorderClass = (l: any) => {
     const s = statusDoLembrete(l);
+    // Paleta ajustada: hoje=warning, próximos=success, passados=info
     if (s === 'hoje') return 'border-l-4 border-warning';
-    if (s === 'passado') return 'border-l-4 border-neutral';
-    return 'border-l-4 border-info';
+    if (s === 'passado') return 'border-l-4 border-info';
+    return 'border-l-4 border-success';
   };
 
   // Filtros visuais
@@ -199,7 +200,7 @@ const RemindersPageImpl = () => {
                     <div className="text-sm opacity-80">
                       <span className="badge badge-outline">{dayjs(l.data).format('DD/MM/YYYY')}</span>
                       {l.hora && <span className="badge badge-outline ml-2">{l.hora}</span>}
-                      {l.categoria && <span className={`badge badge-outline ml-2 ${categoriaBadgeClass(l.categoria)}`}>{l.categoria}</span>}
+                      {l.categoria && <span className={`badge rounded-full ml-2 ${categoriaBadgeClass(l.categoria)}`}>{l.categoria}</span>}
                     </div>
                     {l.descricao && <div className="text-sm opacity-70 mt-1">{l.descricao}</div>}
                   </div>
@@ -225,7 +226,7 @@ const RemindersPageImpl = () => {
                     <div className="text-sm opacity-80">
                       <span className="badge badge-outline">{dayjs(l.data).format('DD/MM/YYYY')}</span>
                       {l.hora && <span className="badge badge-outline ml-2">{l.hora}</span>}
-                      {l.categoria && <span className={`badge badge-outline ml-2 ${categoriaBadgeClass(l.categoria)}`}>{l.categoria}</span>}
+                      {l.categoria && <span className={`badge rounded-full ml-2 ${categoriaBadgeClass(l.categoria)}`}>{l.categoria}</span>}
                     </div>
                     {l.descricao && <div className="text-sm opacity-70 mt-1">{l.descricao}</div>}
                   </div>
